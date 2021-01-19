@@ -1,22 +1,3 @@
-// var http = require('http');
-
-// http.createServer(function(request,response){
-//     response.writeHead(200, {'content': 'text/html'});
-//     response.write('test');
-//     response.end();
-// }).listen(8799);
-
-// console.log('server running at http://localhost:8799');
-
-// MongoClient.connect(url, function (err, database) {
-//    if (err) {
-//       console.error('MongoDB 연결 실패', err);
-//       return;
-//    }
-
-//    db = database;
-//    console.log(db + "dasdasd");
-// });
 var express = require('express'); //express는 기본적으로 쿠키의 기능을 가지고 있지 않다.//
 var bodyParser = require('body-parser'); //POST방식//
 var assert = require('assert'); //NULL 유효검증 모듈//
@@ -35,7 +16,9 @@ app.use(bodyParser.urlencoded({     //to support URL-encoded bodies (url-encoded
     extended: true
 }));
 
-//입력변수//
+//view js에 대해서도 공부해볼것.
+
+//입력변수// 
 var name;
 var age;
 var address;
@@ -148,6 +131,341 @@ function connect_mongodb(response)
     function(callback, message)
     {
         response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+//////////////////////////
+function insert_mongodb(name, age, address, response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                //Connection으로 몽고디비 자원을 가지고 있는 db변수를 넘김//
+                callback(null, db, name, age, address);
+            });
+        },
+        //Task 2 : insert//
+        function(db, name, age, address, callback)
+        {
+            db.collection('test1')
+            .insertOne( {
+                "name": name,
+                "age":age,
+                "address":address
+            }, function(err, result) {
+                assert.equal(err, null);
+                
+                console.log("Inserted a document into the restaurants collection.");
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+                
+                callback(null, 'insert succcess mongodb'); //콜백호출//
+            });
+        }
+    ],
+    //Final Task : send
+    function(callback, message)
+    {
+        response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+//////////////////////////////
+function find_mongodb(response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+
+        //Task 2 : find()
+        function(db, callback)
+        {
+            //조회는 커서(Cursor)의 개념을 이용한다.//
+            //조건절은 find()내부에 JSON형태로 작성한다.//
+            //정렬조건은 find()외부에 JSON형태로 작성한다. (1은 오름차순, -1은 내림차순)//
+            db.collection('test1', function(err, collection) {
+                collection
+                .find()
+                .sort({
+                    "age":1
+                })
+                //toArray를 이용해서 Document의 배열로 반환//
+                .toArray(function(err, items) {
+                    assert.equal(err, null);
+
+                    console.log(items);
+
+                    db.close(); //개방했으니 사용 후 닫아준다.//
+
+                    callback(null, 'find ok...', items);
+                });
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message, doc)
+    {
+        console.log(message);
+
+        response.send(doc);
+
+        console.log('--------------------------');
+    });
+}
+//////////////////////////
+function search_mongodb(search_condition_name, response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+
+        //Task 2 : find()
+        function(db, callback)
+        {
+            //조회는 커서(Cursor)의 개념을 이용한다.//
+            /*조건절은 find()내부에 JSON형태로 작성한다. 기존 연속된 조건은 RDBMS에서는 and를 이용하였지만 MongoDB에서는 key를 붙
+            //여주면 된다.*/
+            db.collection('test1', function(err, collection) {
+                collection
+                .find({
+                    "name":search_condition_name
+                })
+                .sort({
+                    "age":1
+                })
+                //toArray를 이용해서 Document의 배열로 반환//
+                .toArray(function(err, doc) {
+                    assert.equal(err, null);
+
+                   console.log(doc);
+
+                    db.close(); //개방했으니 사용 후 닫아준다.//
+
+                    callback(null, 'search ok(if value is not exist that send [])...', doc);
+                });
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message, doc)
+    {
+        console.log(message);
+
+        response.send(doc);
+
+        console.log('--------------------------');
+    });
+}
+////////////////////////////
+function update_mongodb(update_condition_name, update_age_value, response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : 업데이트//
+        function(db, callback)
+        {
+            //업데이트절의 조건과 값은 updateOne()내부에 JSON형태로 작성//
+            //여러개의 document를 수정 : updateMany()//
+            //업데이트절은 '$set'//
+            db.collection('test1').updateOne(
+                {"name":update_condition_name},
+                {$set: {"age":update_age_value}}, 
+            function(err, results){
+                assert.equal(null, err);
+                    
+                //console.log(results);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'update ok(if value is not exist that no adjust)...');
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message)
+    {
+        console.log(message);
+
+        response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+/////////////////////////////
+function remove_mongodb(remove_condition_name, response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : remove//
+        function(db, callback)
+        {
+            //단일 document 제거 : deleteOne(), 전체 document 제거 : deleteMany(), collection 제거 : drop()//
+            db.collection('test1').deleteOne({
+                "name":remove_condition_name
+            }, function(err, results){
+                assert.equal(null, err);
+                    
+                //console.log(results);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'remove ok(if value is not exist that no adjust)...');
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message)
+    {
+        console.log(message);
+
+        response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+////////////////////////////
+function createindex_mongodb(response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : 인덱스 생성//
+        function(db, callback)
+        {
+            //createIndex()시 인덱스 생성, compoundIndex시 ','로 연결//
+            db.collection('test1').createIndex({
+                "name":1
+            }, null, function(err, results){
+                assert.equal(null, err);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'create index success...');
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message)
+    {
+        console.log(message);
+
+        response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+///////////////////////////
+function dropindex_mongodb(response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : 인덱스 생성//
+        function(db, callback)
+        {
+            //createIndex()시 인덱스 생성, compoundIndex시 ','로 연결//
+            db.collection('test1').dropIndex({
+                "name":1
+            }, null, function(err, results){
+                assert.equal(null, err);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'drop index success...');
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, message)
+    {
+        console.log(message);
+
+        response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+////////////////////////////
+function get_doc_count(response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : get count document//
+        function(db, callback)
+        {
+            db.collection('test1').count({}, function(err, numOfDocs){
+                assert.equal(null, err);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, numOfDocs);
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, numOfDocs)
+    {
+        console.log('users collection count: ' + numOfDocs);
+
+        response.send(''+numOfDocs);
 
         console.log('--------------------------');
     });
