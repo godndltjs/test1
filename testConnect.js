@@ -444,7 +444,8 @@ function get_doc_count(response)
         //파일이 현재 저장소에 저장되어있는지 검사//
         function(callback) //첫 시작은 하나의 callback으로 시작한다.//
         {
-            MongoClient.connect(url, function(err, db){
+           
+            MongoClient.connect(url, {useUnifiedTopology:true},function(err, db){
                 assert.equal(null, err);
 
                 callback(null, db);
@@ -474,4 +475,5 @@ function get_doc_count(response)
 }
 
 //insert_mongodb('name','31','korea',null);
-createindex_mongodb('name');
+//createindex_mongodb('name');
+get_doc_count('test1')
