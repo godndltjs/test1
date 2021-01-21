@@ -45,7 +45,7 @@ app.post('/insert_mongodb', function(request, response){
     //몽고디비에 저장//
     insert_mongodb(name, age, address, response);
 
-    //response.send('success...');
+    response.send('success...');
 });
 
 app.post('/find_mongodb', function(request, response){
@@ -117,7 +117,7 @@ function connect_mongodb(response)
         //파일이 현재 저장소에 저장되어있는지 검사//
         function(callback) //첫 시작은 하나의 callback으로 시작한다.//
         {
-            MongoClient.connect(url, function(err, db){
+            MongoClient.connect(url, {useUnifiedTopology:true},function(err, db){
                 assert.equal(null, err);
 
                 console.log('Connected correctly to server');
@@ -131,10 +131,12 @@ function connect_mongodb(response)
     //Final Task : send
     function(callback, message)
     {
+        
         response.send(message);
 
         console.log('--------------------------');
-    });
+    }
+    );
 }
 //////////////////////////
 function insert_mongodb(name, age, address, response)
@@ -143,7 +145,7 @@ function insert_mongodb(name, age, address, response)
         //파일이 현재 저장소에 저장되어있는지 검사//
         function(callback) //첫 시작은 하나의 callback으로 시작한다.//
         {
-            MongoClient.connect(url, function(err, client){
+            MongoClient.connect(url, {useUnifiedTopology:true},function(err, client){
                 assert.equal(null, err);
                 var db = client.db;
                 //Connection으로 몽고디비 자원을 가지고 있는 db변수를 넘김//
@@ -303,7 +305,7 @@ function update_mongodb(update_condition_name, update_age_value, response)
             function(err, results){
                 assert.equal(null, err);
                     
-                //console.log(results);
+                console.log(results);
 
                 db.close(); //개방했으니 사용 후 닫아준다.//
 
@@ -473,7 +475,8 @@ function get_doc_count(response)
         console.log('--------------------------');
     });
 }
-
-//insert_mongodb('name','31','korea',null);
+connect_mongodb('test1');
+insert_mongodb('name','31','korea',null);
 //createindex_mongodb('name');
-get_doc_count('test1')
+
+//get_doc_count('test1')
