@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringbootServerApplication<springbootServer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "BnoSoft.SpringbootServerApplication",
+            "projectName": "springbootServer",
+            "args": ""
+        }
+    ]
+}
