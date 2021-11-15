@@ -13,12 +13,12 @@ import './Post.css'
 //import PostList from './PostList';
 const PostView = ({history }) => {
     const [ data, setData] = useState({});
-    const { no } = postList.indexOf(1);
-    console.log(no + "---------------------------------------" + data);
+    const { no } = postList.indexOf(-1);
+   
     useEffect(() => {
       setData(getPostByNo(no));
     }, [no]);
-
+    console.log(no + "---------------------------------------" + data);
 return(
     <>
     <h2 align="center">object Information</h2>

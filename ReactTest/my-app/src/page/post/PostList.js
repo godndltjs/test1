@@ -52,12 +52,12 @@
 
 // export default PostList;
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import CommonTable from '../table/CommonTable';
-import CommonTableColumn from '../table/CommonTableColumn';
-import CommonTableRow from '../table/CommonTableRow';
-import { postList } from '../../Data';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import CommonTable from "../table/CommonTable";
+import CommonTableColumn from "../table/CommonTableColumn";
+import CommonTableRow from "../table/CommonTableRow";
+import { postList } from "../../Data";
 
 // const PostList = props => {
 //   return (
@@ -97,7 +97,7 @@ import { postList } from '../../Data';
 //     </>
 //   )
 // }
- 
+
 // const PostList = props => {
 //     const [dataList , setDataList] = useState([]);
 //     useEffect(() =>{
@@ -124,39 +124,43 @@ import { postList } from '../../Data';
 // }
 
 // 조회 버튼, 검색 기능, Rest API,
-const PostList = props => {
-  const [dataList , setDataList] = useState([]);
-  useEffect(() =>{
-      setDataList(postList);
-  },[ ])
-  function onClickEvent(no){
+const PostList = (props) => {
+  const [dataList, setDataList] = useState([]);
+  const [text, setText] = useState("");
+  useEffect(() => {
+    setDataList(postList);
+  }, []);
+  // const [idx, setIdx] = useState('');
+  // setIdx(dataList.no);
+  function onClickEvent(no) {
     console.log(no);
     return no;
   }
+  const onChanged = (e) => {
+    setText(e.target.value);
+  };
   return (
-      <>
-    <CommonTable headersName={['글번호', '제목', '등록일', '조회수']}>
-      {
-        dataList ? dataList.map((item, index) => {
-          return (
-            <CommonTableRow key={index}>
-              <CommonTableColumn>{ item.no }</CommonTableColumn>
-              <CommonTableColumn>
-                <Link to={"/postView/"+item.no}>{ item.title }</Link>
-                </CommonTableColumn>
-              <CommonTableColumn>{ item.createDate }</CommonTableColumn>
-              <CommonTableColumn>{ item.readCount }</CommonTableColumn>
-              
-            </CommonTableRow>
-          )
-        }) : ''
-      }
-      
-      <textarea id="text"/>
-      
-  <button onClick={onClickEvent(dataList.no)}>조회</button>
-    </CommonTable>
-  </>
-  )
-}
+    <>
+      <CommonTable headersName={["글번호", "제목", "등록일", "조회수"]}>
+        {dataList
+          ? dataList.map((item, index) => {
+              return (
+                <CommonTableRow key={index}>
+                  <CommonTableColumn>{item.no}</CommonTableColumn>
+                  <CommonTableColumn>
+                    <Link to={"/postView/" + item.no}>{item.title}</Link>
+                  </CommonTableColumn>
+                  <CommonTableColumn>{item.createDate}</CommonTableColumn>
+                  <CommonTableColumn>{item.readCount}</CommonTableColumn>
+                </CommonTableRow>
+              );
+            })
+          : ""}
+        <input onChange={onChanged} value={text} />
+        {/* <textarea id="text"/> */}
+        <button onClick={onClickEvent(text)}>조회</button>
+      </CommonTable>
+    </>
+  );
+};
 export default PostList;

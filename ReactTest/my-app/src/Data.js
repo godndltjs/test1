@@ -74,7 +74,7 @@ const postList = [
     "content" : "1"
   }
 ];
-  const getPostByNo = no => {
+  const getPostByNo = (no) => {
     const array = postList.filter(x => x.no === no);
     if (array.length === 1) {
       return array[0];
