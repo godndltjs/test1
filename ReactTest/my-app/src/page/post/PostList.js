@@ -129,6 +129,10 @@ const PostList = props => {
   useEffect(() =>{
       setDataList(postList);
   },[ ])
+  function onClickEvent(no){
+    console.log(no);
+    return no;
+  }
   return (
       <>
     <CommonTable headersName={['글번호', '제목', '등록일', '조회수']}>
@@ -148,7 +152,9 @@ const PostList = props => {
         }) : ''
       }
       
-      <textarea id="text"/> <button onClick="">조회</button>
+      <textarea id="text"/>
+      
+  <button onClick={onClickEvent(dataList.no)}>조회</button>
     </CommonTable>
   </>
   )

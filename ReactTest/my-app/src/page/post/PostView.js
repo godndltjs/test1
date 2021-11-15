@@ -14,7 +14,7 @@ import './Post.css'
 const PostView = ({history }) => {
     const [ data, setData] = useState({});
     const { no } = postList.indexOf(1);
-
+    console.log(no + "---------------------------------------" + data);
     useEffect(() => {
       setData(getPostByNo(no));
     }, [no]);
