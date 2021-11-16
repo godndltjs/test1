@@ -9,15 +9,21 @@
 // }
 import React, {useEffect, useState} from 'react';
 import {  getPostByNo, postList } from '../../Data'
-import './Post.css'
+import './Post.css' 
 //import PostList from './PostList';
 const PostView = ({history }) => {
     const [ data, setData] = useState({});
-    const { no } = postList.indexOf(-1);
+    const historyNum = history.location.pathname.substring(10,11);
+    console.log(historyNum);
+    const no = historyNum;//postList[1].no;
+    console.log(history.location.pathname);
+    // const { no } = postList[0].no; //postList.indexOf(0);
+   
+    console.log(postList);
    
     useEffect(() => {
       setData(getPostByNo(no));
-    }, [no]);
+    }, [no]); 
     console.log(no + "---------------------------------------" + data);
 return(
     <>
